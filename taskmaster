@@ -1,0 +1,23 @@
+#!/usr/bin/php
+<?php
+
+if (PHP_SAPI !== 'cli') {
+    exit;
+}
+
+require __DIR__ . '/vendor/autoload.php';
+
+use TaskMaster\App;
+
+$app = new App();
+
+$app->registerCommand('hello', function (array $argv) use ($app) {
+    $name = $argv[2] ?? "World";
+    $app->cliPrinter->display("Hello $name!!!");
+});
+
+$app->registerCommand('help', function (array $argv) use ($app) {
+    $app->cliPrinter->display("usage: taskmaster hello [ your-name ]");
+});
+
+$app->runCommand($argv);
