@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace TaskMaster;
 
-final class CliPrinter
+/**
+ * CliPrinter handles console output formatting and display.
+ * It provides methods for consistent output presentation.
+ */
+final readonly class CliPrinter
 {
     public function out(string $message): void
     {
