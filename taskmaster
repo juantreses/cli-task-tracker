@@ -2,17 +2,26 @@
 <?php
 
 if (PHP_SAPI !== 'cli') {
-    exit;
+    die('This script must be run from the command line.');
 }
 
-require __DIR__ . '/vendor/autoload.php';
+$autoload = __DIR__ . '/vendor/autoload.php';
+if (!file_exists($autoload)) {
+    die('Composer autoload file not found. Run "composer install" first.');
+}
+require $autoload;
 
 use TaskMaster\App;
+use TaskMaster\CliPrinter;
 
-$app = new App();
+$cliPrinter = new CliPrinter();
+$app = new App($cliPrinter);
 
 $app->registerCommand('hello', function (array $argv) use ($app) {
-    $name = $argv[2] ?? "World";
+    if (isset($argv[2]) && !preg_match('/^[a-zA-Z0-9\s-]/', $argv[2])) {
+        throw new InvalidArgumentException('Error: Name can only contain alphanumeric characters, spaces, and hyphens.');
+    }
+    $name = htmlspecialchars($argv[2] ?? 'World', ENT_QUOTES);
     $app->cliPrinter->display("Hello $name!!!");
 });
 
@@ -20,4 +29,10 @@ $app->registerCommand('help', function (array $argv) use ($app) {
     $app->cliPrinter->display("usage: taskmaster hello [ your-name ]");
 });
 
-$app->runCommand($argv);
+try {
+    $app->runCommand($argv);
+    exit(0);
+} catch (Exception $e) {
+    $app->cliPrinter->display($e->getMessage());
+    exit(1);
+}
