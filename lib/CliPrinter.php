@@ -17,14 +17,17 @@ final readonly class CliPrinter
 
     public function newLine(): void
     {
-        $this->out("\n");
+        $this->out(PHP_EOL);
     }
 
-    public function display(string $message): void
+    public function display(string $message, int $beforeLines = 1, int $afterLines = 2): void
     {
-        $this->newLine();
+        for ($i = 0; $i < $beforeLines; $i++) {
+            $this->newLine();
+        }
         $this->out($message);
-        $this->newLine();
-        $this->newLine();
+        for ($i = 0; $i < $afterLines; $i++) {
+            $this->newLine();
+        }
     }
 }
